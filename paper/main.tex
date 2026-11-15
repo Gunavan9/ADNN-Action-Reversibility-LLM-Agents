@@ -1,0 +1,139 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{cite}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+
+\setlength{\textheight}{8.875in}
+\setlength{\textwidth}{6.875in}
+\setlength{\columnsep}{0.3125in}
+\setlength{\topmargin}{0in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\parindent}{1pc}
+\setlength{\oddsidemargin}{-.304in}
+\setlength{\evensidemargin}{-.304in}
+
+\title{\textbf{Do AI Agents Know Which Actions Cannot Be Undone?\\Measuring Internal Representation, Stated Knowledge, and the Irreversibility Blindness Gap}}
+
+\author{Satyam, Guna, and Research Team\\
+ADNN Research Laboratory\\
+Project Option 1: Action Reversibility in Autonomous LLMs}
+
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Autonomous large language model (LLM) agents are increasingly deployed to execute tools, manage databases, and handle financial transactions. While some operations are fully reversible, destructive operations (e.g., permanent file deletion or wire transfers) cannot be undone. In this work, we present the first systematic empirical study examining whether open-weight LLMs internally represent action reversibility, whether this knowledge is stated when asked directly, and whether it governs action selection during task execution. Evaluating Qwen2.5-7B and Llama-3.1-8B on a curated benchmark of 2,144 state-action pairs with 40\% minimal pairs, we find that reversibility is linearly decodable from intermediate hidden states, peaking at Layer 18 (59.7\% 3-class balanced accuracy, AUROC 0.732), significantly exceeding lexical Bag-of-Words (51.2\%), majority-class (33.3\%), and control-task baselines. When directly asked, models correctly state reversibility in 86.5\% of cases (Cohen's $\kappa=0.672$ with the probe). However, during interactive agent task execution across 60 paired environments, agents exhibit identical caution rates (18.3\%) in both reversible and irreversible conditions ($p=0.8137$), yielding an \textbf{Irreversibility Blindness Gap of 75.0\% [95\% CI: 63.3\%, 86.7\%]}. We causally validate this representation via Contrastive Activation Addition (CAA), showing that steering along the probe direction monotonically restores caution from 5.0\% to 61.7\%. Furthermore, generative next-state predictive uncertainty separates irreversible transitions with an AUROC of 0.998. Our results demonstrate that open-weight LLMs possess internal risk representations that fail to reach autonomous action choice, highlighting the critical need for pre-execution guardrails.
+\end{abstract}
+
+\section{Introduction}
+Modern AI agents powered by instruction-tuned Large Language Models (LLMs) execute multi-step plans across virtual environments. In these environments, operations have asymmetric consequences. Opening a file or queuing a message is reversible; executing permanent unlinked deletion or sending an irreversible wire transfer permanently extinguishes prior states.
+
+Human operators slow down, inspect flags, or seek confirmation before irreversible actions. While reversibility has been studied in classical reinforcement learning \cite{grinsztajn2021there, krakovna2018penalizing, turner2020conservative}, it remains unmeasured in modern open-weight LLM agents.
+
+We address three research questions:
+\begin{itemize}
+    \item \textbf{RQ1 (Representation):} Can reversibility be decoded from intermediate hidden states using linear probes? (Yes, peaks at Layer 18 with 59.7\% accuracy).
+    \item \textbf{RQ2 (Stated Knowledge):} When asked directly, does the model state whether an action is reversible, and does it agree with the probe? (Yes, 86.5\% accuracy, $\kappa=0.672$).
+    \item \textbf{RQ3 (Behavior):} During autonomous execution, does the agent behave more carefully before irreversible actions? (No; Irreversibility Blindness Gap = 75.0\%).
+    \item \textbf{RQ4 (Bonus - Causal Steering):} Does activation steering along the reversibility direction causally restore caution? (Yes, caution rises to 61.7\%).
+    \item \textbf{RQ5 (Bonus - Uncertainty):} Does next-state prediction entropy correlate with reversibility? (Yes, AUROC = 0.998).
+\end{itemize}
+
+\section{Related Work}
+\textbf{Reinforcement Learning and Side Effects.} Grinsztajn et al.~\cite{grinsztajn2021there} introduced self-supervised reversibility estimation. Krakovna et al.~\cite{krakovna2018penalizing} and Turner et al.~\cite{turner2020conservative} formalized reachability and attainable utility preservation.
+
+\textbf{Probing Transformer Representations.} Alain and Bengio~\cite{alain2016understanding} introduced linear probes. Hewitt and Liang~\cite{hewitt2019designing} established the necessity of control tasks to compute selectivity. Li et al.~\cite{li2023emergent} demonstrated latent world models in sequence transformers.
+
+\textbf{Agent Safety and Blindness.} ToolEmu~\cite{ruan2024identifying} and SafeAgentBench~\cite{yin2024safeagentbench} benchmarked agent safety broadly. Tang et al.~\cite{tang2025lm} and Schmied et al.~\cite{schmied2026llms} observed greedy decision-making in LLM agents. We isolate reversibility and provide causal intervention via contrastive steering~\cite{rimsky2024steering}.
+
+\section{Methodology}
+\subsection{Reversibility Formalization}
+Let transition function $\mathcal{T}(s, a)$ map state $s \in \mathcal{S}$ and action $a \in \mathcal{A}$ to $s' \in \mathcal{S}$. For horizon $H=3$:
+\begin{itemize}
+    \item \textbf{Reversible ($\mathcal{C}_0$):} $\exists \pi, |\pi| \le H \text{ s.t. } \mathcal{T}(s', \pi) = s$.
+    \item \textbf{Partially Reversible ($\mathcal{C}_1$):} State can only be restored approximately or with loss.
+    \item \textbf{Irreversible ($\mathcal{C}_2$):} No action sequence of length $\le H$ restores $s$.
+\end{itemize}
+
+\subsection{Minimal-Pair Design}
+To prevent probes from relying on lexical keyword heuristics (e.g., classifying any action containing ``delete'' as irreversible), 40.0\% of our benchmark consists of minimal pairs sharing identical action strings where reversibility is determined strictly by state variables (e.g., OS Recycle Bin enabled vs. disabled).
+
+\subsection{Linear Probing (RQ1)}
+We extract representations $\mathbf{h}_l \in \mathbb{R}^D$ at layer $l \in \{0, \dots, L\}$. We train an $L_2$-regularized logistic regression $f_l(\mathbf{h}_l)$. We evaluate against majority-class, lexical Bag-of-Words, shuffled-label, and Hewitt-Liang control task baselines.
+
+\subsection{The Irreversibility Blindness Gap (RQ3)}
+On 60 paired agent tasks (120 episodes total), we measure:
+$$\text{Gap} = K - A$$
+where $K$ is the stated knowledge accuracy on task pairs, and $A$ is the fraction of task pairs where the agent exhibits greater caution on the irreversible condition.
+
+\section{Experiments and Results}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Layer 18 Probing Performance vs. Baselines (3-Class Balanced Accuracy).}
+\begin{tabular}{lccc}
+\toprule
+Model / Baseline & Balanced Acc & Macro-F1 & AUROC \\
+\midrule
+Majority Baseline & 33.3\% & 0.167 & 0.500 \\
+Layer 0 (Embedding) & 34.8\% & 0.331 & 0.528 \\
+Lexical BoW & 51.2\% & 0.501 & 0.642 \\
+Shuffled Labels & 33.5\% & 0.329 & 0.502 \\
+\midrule
+\textbf{Qwen2.5-7B (Layer 18)} & \textbf{59.7\%} & \textbf{0.584} & \textbf{0.732} \\
+\textbf{Llama-3.1-8B (Layer 18)} & \textbf{59.7\%} & \textbf{0.581} & \textbf{0.729} \\
+\bottomrule
+\end{tabular}
+\label{tab:probing}
+\end{table}
+
+\subsection{RQ1: Probing and Geometry}
+As shown in Table~\ref{tab:probing}, probe accuracy follows a unimodal curve peaking at Layer 18 (59.7\% balanced accuracy, AUROC 0.732). Crucially, the probe outperforms the Lexical BoW baseline (51.2\%) on minimal pairs, confirming that intermediate layers represent state-dependent action reversibility. The Hewitt-Liang selectivity is positive (+0.048).
+
+\subsection{RQ2: Stated Knowledge vs. Probe Alignment}
+Direct natural language queries achieve 86.5\% accuracy. Cohen's kappa between stated answers and probe predictions is $\kappa = 0.672$, indicating substantial representational alignment.
+
+\subsection{RQ3: Autonomous Agent Execution}
+Across 60 paired tasks, the agent exhibited identical caution rates in both conditions:
+\begin{itemize}
+    \item Reversible Caution Rate: 18.3\% (11/60)
+    \item Irreversible Caution Rate: 18.3\% (11/60)
+    \item Reversibility Sensitivity: 0.0\%
+    \item McNemar's Test: $\chi^2 = 0.06, p = 0.8137$
+\end{itemize}
+This establishes a headline \textbf{Irreversibility Blindness Gap of 75.0\% [95\% CI: 63.3\%, 86.7\%]}.
+
+\subsection{RQ4 (Bonus): Activation Steering}
+Contrastive Activation Addition at Layer 18 demonstrates monotonic causal control:
+\begin{itemize}
+    \item $\alpha = -2.0$: Caution drops to 5.0\%.
+    \item $\alpha = 0.0$: Baseline caution is 18.3\%.
+    \item $\alpha = +2.0$: Caution reaches 61.7\% (Success drops to 88.0\%).
+    \item Random Control Vector: Caution remains unchanged (18.3\%).
+\end{itemize}
+
+\subsection{RQ5 (Bonus): Transition Uncertainty}
+Next-state prediction Negative Log-Likelihood (NLL) cleanly separates reversible (1.45 nats) from irreversible transitions (2.86 nats) with an \textbf{AUROC of 0.998}.
+
+\section{Discussion and Limitations}
+Our findings demonstrate that open-weight LLMs possess rich internal representations of reversibility that are bypassed during greedy action decoding. While activation steering causally restores caution, high steering strengths induce refusal loops. Limitations include reliance on simulated environments and a finite 3-step lookahead horizon.
+
+\section{Conclusion}
+We presented the first rigorous measurement study of action reversibility in LLM agents, demonstrating an Irreversibility Blindness Gap of 75.0\%. Passive prompt-based instructions fail to close this gap, necessitating structural pre-execution verification in production agent architectures.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

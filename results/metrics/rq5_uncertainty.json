@@ -1,0 +1,11 @@
+{
+  "sample_size": 2144,
+  "mean_nll_reversible": 1.4513554149402677,
+  "std_nll_reversible": 0.27990919239045264,
+  "mean_nll_partially_reversible": 2.215989280012117,
+  "std_nll_partially_reversible": 0.35297488001423316,
+  "mean_nll_irreversible": 2.8804545726939286,
+  "std_nll_irreversible": 0.40134471964315815,
+  "auroc_uncertainty_separation": 0.9984461564636701,
+  "finding": "Next-state prediction uncertainty effectively distinguishes irreversible transitions (mean NLL 2.88) from reversible transitions (mean NLL 1.45) with an AUROC of 0.998."
+}

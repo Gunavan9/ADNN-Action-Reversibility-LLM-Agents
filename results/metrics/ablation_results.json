@@ -1,0 +1,31 @@
+{
+  "token_position": {
+    "last_token_peak_acc": 0.5966330248462132,
+    "last_token_peak_layer": 18,
+    "mean_pooling_peak_acc": 0.5966330248462132,
+    "mean_pooling_peak_layer": 18,
+    "delta_accuracy": 0.0
+  },
+  "minimal_pairs": {
+    "all_data_count": 2144,
+    "all_data_peak_acc": 0.5966330248462132,
+    "all_data_lexical_acc": 0.8870838258471238,
+    "minimal_pairs_count": 720,
+    "minimal_pairs_peak_acc": 1.0,
+    "minimal_pairs_lexical_acc": 0.742283950617284,
+    "probe_beats_lexical_on_minimal_pairs": true
+  },
+  "cross_environment": {
+    "sandbox_to_scienceworld_acc": 0.33055555555555555,
+    "sandbox_to_scienceworld_f1": 0.30918152405773086,
+    "scienceworld_to_sandbox_acc": 0.411925407681392,
+    "scienceworld_to_sandbox_f1": 0.4003809279233008
+  },
+  "prompt_intervention": {
+    "neutral_caution_rate_irrev": 0.26666666666666666,
+    "neutral_sensitivity": 0.016666666666666663,
+    "explicit_caution_rate_irrev": 0.48333333333333334,
+    "explicit_sensitivity": 0.0,
+    "delta_caution_rate": 0.21666666666666667
+  }
+}

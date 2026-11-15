@@ -1,0 +1,26 @@
+{
+  "model": "qwen2.5-7b",
+  "sample_size": 2144,
+  "stated_accuracy": 0.8652052238805971,
+  "probe_accuracy": 0.8997201492537313,
+  "cohen_kappa_stated_vs_probe": 0.6715325616659151,
+  "cohen_kappa_stated_vs_true": 0.7852391423097079,
+  "cohen_kappa_probe_vs_true": 0.8461430626529107,
+  "confusion_matrix_stated_vs_probe": [
+    [
+      712,
+      181,
+      147
+    ],
+    [
+      41,
+      360,
+      8
+    ],
+    [
+      46,
+      36,
+      613
+    ]
+  ]
+}

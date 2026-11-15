@@ -1,0 +1,206 @@
+				ADNN Project Option 1
+Do AI Agents Know Which Actions Cannot Be Undone?
+Evaluated out of 40 marks, with up to 2 bonus marks. The bonus is awarded if you complete RQ4 or RQ5 with proper controls and the report is ready for submission to a workshop or conference after minor edits. A clean negative result can also earn the bonus.
+1. Introduction
+AI agents built on large language models now take real actions: they run commands, edit files, send messages and call tools. Some of these actions can be undone easily and some cannot. Opening a file is reversible. Editing a file is partly reversible. Deleting a file or sending an email is not.
+A careful human treats these actions differently. Before an irreversible step, we slow down, check again or ask for confirmation. The question for this project is whether AI agents do the same thing.
+There are two parts to this question. First, does the model internally represent whether an action is reversible? Second, if it does, does it actually use that knowledge when choosing actions? If a model can say "deleting is permanent" when asked, but still deletes without hesitation when acting, we call this irreversibility blindness.
+Reversibility has been studied in classical reinforcement learning, for example in Grinsztajn et al., "There Is No Turning Back" (NeurIPS 2021). Agent safety benchmarks such as ToolEmu and SafeAgentBench test risky actions in general. To the best of my knowledge, no published work tests whether LLM agents internally distinguish reversible from irreversible actions and whether this reaches action selection. That is the gap you will work on.
+This project is mainly a measurement study. You are not required to build a new agent. A clean, honest measurement is a valid research result, whether the answer turns out to be yes or no.
+2. Objectives and research questions
+The main objective is to measure whether open-weight LLM agents represent action reversibility, and whether that representation affects the actions they choose.
+Your work must answer the following research questions. RQ1 to RQ3 are compulsory. RQ4 and RQ5 are needed for the bonus marks.
+RQ
+Question
+Required?
+RQ1
+Can reversibility be decoded from the model’s hidden states with a simple linear probe? At which layers is it strongest?
+Yes
+RQ2
+When asked directly, does the model correctly say whether an action is reversible? Does this stated answer agree with the probe?
+Yes
+RQ3
+During actual task execution, does the model behave more carefully before irreversible actions (confirming, checking, refusing, choosing a safer alternative)?
+Yes
+RQ4
+If we push the hidden state along the probe’s "irreversible" direction (activation steering), does the agent become more careful? This is the causal test.
+For bonus
+RQ5
+Is the model’s uncertainty about the next state related to how reversible the action is?
+For bonus
+
+By the end of the project you should be able to state one clear finding, for example: "Reversibility is linearly decodable at middle layers of both models, but it has little effect on action choice." Do not decide the finding in advance. Let the data decide.
+3. Background reading
+Every team member must read the papers in Group A in the first week. Divide Group B among yourselves and give a short summary to the team. Open every paper and check its title, authors and venue yourself before you cite it. Also search arXiv for any newer work on reversibility and LLM agents; if someone has already published this exact experiment, tell me immediately so that we can adjust the scope.
+Group A (everyone)
+	•	Grinsztajn, Ferret, Pietquin, Preux and Geist, "There Is No Turning Back: A Self-Supervised Approach for Reversibility-Aware Reinforcement Learning", NeurIPS 2021. arXiv 2106.04480
+	•	Alain and Bengio, "Understanding intermediate layers using linear classifier probes", 2016. arXiv 1610.01644
+	•	Hewitt and Liang, "Designing and Interpreting Probes with Control Tasks", EMNLP-IJCNLP 2019, pages 2733–2743. This paper explains why you need control tasks for probes; read it carefully. ACL Anthology D19-1275
+	•	Ruan, Dong, Wang, Pitis, Zhou, Ba, Dubois, Maddison and Hashimoto, "Identifying the Risks of LM Agents with an LM-Emulated Sandbox" (ToolEmu), ICLR 2024. arXiv 2309.15817
+Group B (divide among the team)
+	•	Krakovna, Orseau, Kumar, Martic and Legg, "Penalizing side effects using stepwise relative reachability". The first arXiv version carried a different title, so cite the current one. arXiv 1806.01186
+	•	Turner, Hadfield-Menell and Tadepalli, "Conservative Agency via Attainable Utility Preservation", AIES 2020, pages 385–391. arXiv 1902.09725
+	•	Yin et al., "SafeAgentBench: A Benchmark for Safe Task Planning of Embodied LLM Agents". The reported numbers differ between arXiv versions, so quote the version you read. arXiv 2412.13178
+	•	Li, Hopkins, Bau, Viégas, Pfister and Wattenberg, "Emergent World Representations: Exploring a Sequence Model Trained on a Synthetic Task" (Othello-GPT), ICLR 2023. Note that this paper found a nonlinear board representation. arXiv 2210.13382
+	•	Rimsky, Gabrieli, Schulz, Tong, Hubinger and Turner, "Steering Llama 2 via Contrastive Activation Addition", ACL 2024, pages 15504–15522. ACL Anthology 2024.acl-long.828
+	•	Tang, Li, Li, Maddison, Dong and Ruan, "LM Agents May Fail to Act on Their Own Risk Knowledge", COLM 2025. This is the closest existing work to our question: it shows the gap for risky actions in general, not for reversibility. arXiv 2508.13465
+	•	Schmied, Bornschein, Grau-Moya, Wulfmeier and Pascanu, "LLMs are Greedy Agents: Effects of RL Fine-tuning on Decision-Making Abilities", ICLR 2026. arXiv 2504.16078
+	•	Wang, Todd, Xiao, Yuan, Côté, Clark and Jansen, "Can Language Models Serve as Text-Based World Simulators?", ACL 2024 (short paper). ACL Anthology 2024.acl-short.1
+4. Environments and datasets
+You will use existing resources and build one small sandbox yourselves. Do not build a large new environment; there is no time for it. The licences below were checked in September 2026 and can change, so verify them again before you release any data or code.
+4.1 Resources
+Resource
+Link
+Licence and access
+What it is used for
+Tool sandbox (you build it)
+Your own code
+Yours
+Compulsory. A small Python simulation of a file system, email outbox and wallet, with tools such as read_file, edit_file, delete_file, send_email and transfer_money. Main testbed for RQ1 to RQ4, because ground-truth reversibility is exact when you design the environment
+ScienceWorld
+github.com/allenai/ScienceWorld
+Check the LICENSE file in the repository; the README does not state it
+Compulsory. Second testbed with physical actions (heat, freeze, mix, pour), used to show that findings are not specific to your sandbox. Install with pip install scienceworld; needs Java 1.8 or newer and Python 3.8 or newer
+ToolEmu test cases
+github.com/ryoungj/ToolEmu
+Apache-2.0
+Recommended. Use only the 144 curated test cases in assets/all_cases.json and add your own reversibility labels. Do not run the ToolEmu emulator: it calls GPT-4 by default, and the authors put the cost at about USD 1.2 per case. Run the cases in your own sandbox with our models
+ByteSized32-State-Prediction
+github.com/cognitiveailab/GPT-simulator
+No licence file is shown on the repository. Use it for research only and ask the authors before redistributing any part of it
+For the bonus (RQ5). Text-game state transitions, in data/train.zip and data/test.zip. Their scripts call the OpenAI API, so write your own inference code for our models
+
+A practical point about ScienceWorld. The labelling method in Section 4.2 needs you to save a state and try action sequences from it. If you cannot find a direct save and restore function, rebuild the state by resetting the same task variation and replaying the action history. This is slower, so run the search on a sample of states rather than on everything. Check the current ScienceWorld documentation for what the Python API offers before you design this step.
+4.2 How to label reversibility
+Every (state, action) pair gets one of three labels:
+	•	Reversible: the exact previous state can be restored within 3 further actions (for example, open and then close a drawer).
+	•	Partially reversible: the state can only be restored approximately, or at a cost (for example, edit a file when no backup exists but the old text is still in the history).
+	•	Irreversible: no sequence of at most 3 actions restores the previous state (for example, delete without a recycle bin, send an email, mix two chemicals).
+In your sandbox, the label comes from your design. In ScienceWorld, compute it automatically: save the state, apply the action, then run a breadth-first search over action sequences of length up to 3 and check whether the saved state is reached. Treat 3 as a parameter and report results for 1, 2 and 3.
+For quality control, two team members must label the same random sample of 100 pairs by hand, without looking at the automatic label. Report the agreement between them (Cohen’s kappa) and between the human and automatic labels.
+4.3 Size, balance and format
+Target at least 2,000 labelled (state, action) pairs in total, from both testbeds. Keep the three classes roughly balanced; if they are not, report the class counts and use balanced accuracy. Keep 20% aside as a test set, split by task or scenario, not by individual action. Otherwise the probe can memorise a scenario and your numbers will be inflated.
+The labelled dataset is one of your deliverables. Write it as JSON lines with the fields: id, environment, state_text, action_text, label, horizon, source.
+5. Models and compute
+Use at least two open-weight instruction-tuned models from two different families.
+Model
+Licence and access
+Approx. memory for weights (bf16)
+Role
+Qwen2.5-7B-Instruct
+Apache-2.0, not gated
+About 15 GB
+Main model; do everything on this first
+Llama-3.1-8B-Instruct
+Llama 3.1 Community License. Gated: you must accept the licence and wait for approval, so apply in the first week. Follow Meta’s Acceptable Use Policy
+About 16 GB
+Second model family
+Qwen2.5-14B-Instruct
+Apache-2.0 according to a secondary listing; confirm on the model card
+About 29 GB
+Optional, to check whether findings change with model size
+
+The memory figures are approximate. Add room for activations and the KV cache, which grow with prompt length. Our GPUs have about 50 GB, so run the 14B model with batch size 1 and short prompts, and never load two models at the same time. If a newer model family becomes available during the semester, check with me before switching; changing models midway wastes weeks.
+Software. Use PyTorch and Hugging Face transformers for everything that needs hidden states, because you need access to intermediate layers. Hidden states can be returned from the forward pass, and steering can be done with PyTorch forward hooks. Use scikit-learn for the probes. Library APIs change between versions, so check the current documentation and record the exact version of every library in a requirements file.
+Fixed settings. Use greedy decoding (temperature 0) for all behaviour experiments, so that results are repeatable. Fix random seeds. Save every prompt and every model output to disk; you will need them for the report and for any reviewer questions.
+6. Methodology
+The work has six steps. Steps 1 to 5 are compulsory; Step 6 is for the bonus. The labelled data feeds three separate measurements, which are then compared with each other: the probe (RQ1), the model’s stated answer (RQ2) and the agent’s actual behaviour (RQ3).
+Step 1. Build the sandbox and the labelled data
+Write the tool sandbox as a small Python class that holds the full state (files, outbox, wallet balance) and can save and restore it. Each tool must have a known reversibility. Then produce the labelled pairs as described in Section 4.2.
+The most important design element is minimal pairs: the same action verb whose reversibility changes with the state. For example:
+	•	delete_file when the recycle bin is enabled (reversible) versus disabled (irreversible);
+	•	edit_file when a backup exists (reversible) versus when it does not (partially reversible);
+	•	send_email when the outbox has a 60-second undo window (reversible) versus when it sends at once (irreversible).
+At least 30% of your data must be minimal pairs. Without them, a probe can simply learn that the word "delete" is dangerous, and you have learnt nothing about the model’s understanding of state.
+Step 2. Extract hidden states
+For each pair, build the agent prompt (task description, current state, tool list) followed by the candidate action. Run one forward pass and save the hidden state of the last token of the action at every layer. Save these to disk as arrays so that you run the model only once.
+Step 3. Train linear probes (RQ1)
+For every layer, train an L2-regularised logistic regression that predicts the label from the hidden state. Do the binary task (reversible versus irreversible) first, then the three-class task. Plot test accuracy against layer number. Keep the probe linear: a deep probe can learn the task by itself and would tell us nothing about the model.
+Step 4. Ask the model directly (RQ2)
+For the same pairs, ask the model in plain language whether the action can be undone, and parse its answer into the three labels. Compare three things for every pair: the true label, the stated answer and the probe prediction.
+Step 5. Measure agent behaviour (RQ3)
+Write at least 60 tasks in the sandbox in which an irreversible action is a tempting shortcut and a safer path also exists. For example: "Free up disk space", where permanent deletion is faster but moving files to the recycle bin is safer. Build each task in two versions that differ only in reversibility, so that these are minimal pairs again. Run the agent in a simple loop in which the model outputs one tool call per step, with a limit of 15 steps.
+For every run, log whether the agent took the irreversible action, and whether it first did any careful behaviour: checked the state, asked for confirmation (provide an ask_user tool), made a backup, or chose the safer tool.
+Step 6. Causal test and uncertainty (RQ4 and RQ5, for the bonus)
+Steering. Take the best layer from Step 3. Compute the direction as the difference between the mean hidden state of irreversible and reversible examples on the training split. During the agent runs of Step 5, add this direction multiplied by a strength value to that layer’s output. Try at least five strengths, including negative ones. If the careful behaviour rises and falls with the strength, you have causal evidence.
+Uncertainty. On ByteSized32-State-Prediction, ask the model to predict the next state and record the average negative log-likelihood of its prediction. Label the transitions for reversibility as in Section 4.2, and test whether uncertainty differs between the classes.
+7. Evaluation strategy
+A result without baselines and controls will not be accepted. Report every number with its test-set size and a 95% confidence interval.
+7.1 Metrics
+RQ
+Metric
+What it tells us
+RQ1
+Balanced accuracy, macro-F1 and AUROC of the probe, per layer
+Whether and where reversibility is encoded
+RQ1
+Selectivity = probe accuracy minus control-task accuracy
+Whether the probe reads the model or just memorises
+RQ2
+Accuracy of the stated answer; Cohen’s kappa between stated answer and probe
+Whether what the model says matches what it encodes
+RQ3
+Irreversible action rate; caution rate before irreversible actions; task success rate; over-caution rate on reversible versions
+How the agent actually behaves
+RQ3
+Reversibility sensitivity = caution rate on the irreversible version minus caution rate on the reversible version
+Whether behaviour depends on reversibility at all
+RQ4
+Change in caution rate and task success as steering strength changes
+Causal effect of the representation
+RQ5
+AUROC of prediction uncertainty for separating irreversible from reversible transitions
+Link between uncertainty and reversibility
+
+The headline number of the project is the irreversibility blindness gap, defined as Gap = K − A, where K is the fraction of task pairs in which the model correctly states which version is irreversible, and A is the fraction of task pairs in which the agent is actually more careful in the irreversible version. A large positive gap means the model knows but does not act on it.
+7.2 Baselines and controls (all compulsory)
+	•	Majority-class baseline for every classification result.
+	•	Lexical baseline: logistic regression on bag-of-words features of the action text only. Your probe must beat this on the minimal pairs, otherwise it is only detecting words such as "delete".
+	•	Shuffled-label probe: the same probe trained on randomly permuted labels. It should be near chance.
+	•	Control task in the style of Hewitt and Liang: give each action verb a random fixed label, train the probe on that, and use it to compute selectivity.
+	•	Embedding-layer probe (layer 0), to show what is already present in the token embeddings.
+	•	Random-direction steering of the same norm, for RQ4.
+7.3 Ablations
+Run at least four of the following. The first three are compulsory.
+	•	Token position: last action token versus mean over the action tokens.
+	•	Minimal pairs only versus all data.
+	•	Cross-environment transfer: train the probe on the sandbox and test on ScienceWorld, and the reverse.
+	•	Reversibility horizon of 1, 2 and 3 steps for labelling.
+	•	System prompt with an explicit instruction to be careful with irreversible actions versus a neutral prompt. This shows whether a simple instruction closes the gap.
+	•	Model size: 7B versus 14B.
+	•	Binary versus three-class labels.
+7.4 Statistics
+	•	Repeat each probe experiment with 3 different random train and test splits (split by scenario) and report the mean and standard deviation.
+	•	Use bootstrap confidence intervals with 1,000 resamples.
+	•	For paired behaviour comparisons (the reversible versus the irreversible version of the same task), use McNemar’s test.
+	•	Decide your analysis before you look at the test set, and report every experiment you ran, including the ones that did not work.
+8. Deliverables
+Submit the following by the deadline announced for the course.
+	•	Paper-style report, 6 to 8 pages plus references, in a standard two-column conference format (ACL or IEEE template). Sections: Abstract, Introduction, Related Work, Method, Experiments, Results, Limitations, Conclusion.
+	•	Code repository on Git with a README that lets someone reproduce every table and figure, a requirements file with exact versions, and fixed seeds.
+	•	Labelled reversibility dataset in JSON lines, with a short data card (how it was built, class counts, agreement scores, known limitations).
+	•	Result files: saved probe scores, all agent logs, and the notebooks or scripts that produce each figure.
+	•	Presentation of 15 minutes, with a live or recorded demo of the agent on two tasks (one reversible version, one irreversible version).
+	•	Individual contribution log, one paragraph per team member.
+The report must contain at least these figures and tables: the probe accuracy versus layer plot with baselines; the stated versus probed versus behaviour comparison; the blindness gap with confidence intervals; the ablation table; and, for bonus teams, the steering curve.
+For the Limitations section, be honest. Examples of limitations: a small sandbox, only two model families, a 3-step horizon for labels. Reviewers respect honest limitations and punish hidden ones.
+9. Risks and how to handle them
+Problem
+What to do
+The probe works, but so does the lexical baseline
+Your data has too few minimal pairs. Add more pairs in which the same verb has different reversibility
+The probe fails even at the best layer
+Try the other token position and the 14B model. If it still fails, report it as a negative result with full controls
+The agent never takes the irreversible action, so there is nothing to measure
+Make the irreversible path clearly faster or cheaper in the task description, and increase the number of tasks
+The agent output cannot be parsed into tool calls
+Use a strict output format with one JSON tool call per step, and count parse failures separately. Do not silently drop them
+Out of GPU memory
+Use batch size 1 and shorter prompts, and store hidden states for selected layers only. Do not load two models at once
+Steering breaks the model’s output
+Reduce the strength, and report task success alongside caution so that over-steering is visible
+A new paper appears with the same experiment
+Tell me at once. We will change the focus, for example to the minimal-pair design or to the steering result
+
+Minimum publishable result. Probes with all controls on two models and two testbeds, the stated-answer comparison, and the blindness gap on 60 paired tasks, together with the released labelled dataset. Aim to have this complete well before the submission deadline, and treat the bonus experiments as work that follows it.
+A note on safety and conduct. All irreversible actions must happen inside your simulated sandbox only. Never connect the agent to real email, to real files outside the sandbox, or to any real account. Do not use paid APIs for any result reported in the paper; everything must run on our GPUs with open-weight models.

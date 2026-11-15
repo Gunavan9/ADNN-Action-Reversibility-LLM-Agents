@@ -1,0 +1,24 @@
+{
+  "sample_size": 100,
+  "cohen_kappa_inter_annotator": 0.7799434140207482,
+  "cohen_kappa_ann1_vs_ground_truth": 0.8888536043188314,
+  "cohen_kappa_ann2_vs_ground_truth": 0.8898678414096917,
+  "mean_human_agreement": 0.8893607228642615,
+  "confusion_matrix_ann1_ann2": [
+    [
+      38,
+      4,
+      2
+    ],
+    [
+      2,
+      15,
+      1
+    ],
+    [
+      3,
+      2,
+      33
+    ]
+  ]
+}

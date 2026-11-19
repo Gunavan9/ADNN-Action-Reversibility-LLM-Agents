@@ -8,11 +8,17 @@ Generates 300 DPI publication plots adhering to IEEE / ACL standards:
 - Figure 5: Ablation study comparison matrix.
 """
 
+import sys
 import json
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
+
+# Add project root to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from src.config import FIGURES_DIR, PAPER_FIGURES_DIR, METRICS_DIR
+
 
 plt.rcParams.update({
     "font.size": 11,

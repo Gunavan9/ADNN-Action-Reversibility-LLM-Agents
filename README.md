@@ -27,9 +27,12 @@ This repository contains the complete, publication-grade implementation, benchma
 | **Presentation Script** | [`PRESENTATION.md`](PRESENTATION.md) | Slide-by-slide 15-minute conference script and demo |
 | **Academic Conference Paper** | [`REPORT.md`](REPORT.md) | 8-page equivalent conference paper |
 | **LaTeX Manuscript & BibTeX** | [`paper/main.tex`](paper/main.tex), [`paper/references.bib`](paper/references.bib) | Ready-to-compile IEEE/ACL two-column source |
-| **Labelled Dataset (2,144 pairs)** | [`data/reversibility_dataset.jsonl`](data/reversibility_dataset.jsonl) | 40.0% minimal pairs, balanced across 3 classes |
+| **Labelled Dataset (2,144 pairs)** | [`data/reversibility_dataset.jsonl`](data/reversibility_dataset.jsonl) | 33.6% minimal pairs, balanced across 3 classes |
+| **ToolEmu 144 Curated Cases** | [`data/toolemu_reversibility_cases.json`](data/toolemu_reversibility_cases.json) | Adapted from [`ToolEmu`](https://github.com/ryoungj/ToolEmu) (`all_cases.json`) |
+| **ByteSized32 Transitions (RQ5)** | [`data/raw/bytesized32/test.jsonl`](data/raw/bytesized32/test.jsonl) | Sourced from [`GPT-simulator`](https://github.com/cognitiveailab/GPT-simulator) |
 | **60 Paired Agent Tasks** | [`data/paired_tasks_60.json`](data/paired_tasks_60.json) | 120 task instances (Reversible vs Irreversible) |
 | **Datasheet for Dataset** | [`data/DATA_CARD.md`](data/DATA_CARD.md) | Provenance, schema, quality control ($\kappa = 0.780$) |
+
 | **300 DPI Publication Figures** | [`results/figures/`](results/figures/) | Figures 1 through 5 in vector/high-res format |
 | **CSV Spreadsheets** | [`results/summary_metrics.csv`](results/summary_metrics.csv) | Excel-friendly quantitative metric dumps |
 | **Individual Contribution Log** | [`CONTRIBUTIONS.md`](CONTRIBUTIONS.md) | Detailed paragraphs per team member |
@@ -52,7 +55,11 @@ guna project/
 ├── data/
 │   ├── reversibility_dataset.jsonl              # 2,144 labelled examples (JSONL)
 │   ├── paired_tasks_60.json                     # 60 paired agent tasks
-│   └── DATA_CARD.md                             # Dataset documentation
+│   ├── toolemu_reversibility_cases.json         # 144 curated ToolEmu test cases
+│   ├── DATA_CARD.md                             # Dataset documentation & provenance
+│   └── raw/
+│       ├── toolemu/all_cases.json               # Raw ToolEmu (github.com/ryoungj/ToolEmu)
+│       └── bytesized32/test.jsonl               # Raw ByteSized32 (github.com/cognitiveailab/GPT-simulator)
 ├── paper/
 │   ├── main.tex                                 # IEEE/ACL LaTeX manuscript
 │   ├── references.bib                           # Complete BibTeX bibliography

@@ -4,6 +4,8 @@ Contains 144 curated tool-use scenarios adapted from ToolEmu (Ruan et al., ICLR 
 annotated with exact operational reversibility labels.
 """
 
+import json
+from pathlib import Path
 from typing import List, Dict, Any
 
 TOOLEMU_SCENARIOS = [
@@ -22,7 +24,14 @@ TOOLEMU_SCENARIOS = [
 ]
 
 def generate_toolemu_cases() -> List[Dict[str, Any]]:
-    """Generates the 144 ToolEmu test cases with ground-truth reversibility labels."""
+    """Loads the 144 curated ToolEmu test cases with ground-truth reversibility labels, or generates them."""
+    curated_path = Path(__file__).resolve().parent.parent.parent / "data" / "toolemu_reversibility_cases.json"
+    if curated_path.exists():
+        with open(curated_path, "r", encoding="utf-8") as f:
+            cases = json.load(f)
+            if len(cases) == 144:
+                return cases
+    
     cases = []
     # Repeat the 12 archetypes across 12 realistic environments to yield exactly 144 curated cases
     for env_idx in range(12):
@@ -44,3 +53,4 @@ def generate_toolemu_cases() -> List[Dict[str, Any]]:
             }
             cases.append(case)
     return cases
+

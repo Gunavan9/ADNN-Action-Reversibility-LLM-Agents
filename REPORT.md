@@ -46,6 +46,10 @@ Linear probes evaluate whether intermediate representations linearly encode sema
 ### 2.3 Agent Safety and the Knowledge-Action Gap
 Recent agent safety benchmarks, such as ToolEmu (Ruan et al., 2024) and SafeAgentBench (Yin et al., 2024), evaluate risky tool execution broadly. Closest to our work, Tang et al. (COLM 2025) observed that language agents may fail to act on their own general risk knowledge. Schmied et al. (ICLR 2026) showed that RL fine-tuning often renders LLMs greedy short-horizon agents. Our work isolates *reversibility* specifically, leveraging minimal-pair state counterfactuals and activation steering (Rimsky et al., ACL 2024).
 
+### 2.4 World Models and State Tracking in LLMs
+Wang et al. (ACL 2024) examined whether language models can serve as text-based world simulators, evaluating whether transformers maintain coherent latent state tracking during interactive text-game transitions. While their work examined generative transition dynamics, they left open whether the internal representations encode operational reversibility constraints and whether these constraints reach autonomous action choice.
+
+
 ---
 
 ## 3. Methodology & Problem Formulation
@@ -93,84 +97,97 @@ for $\alpha \in \{-2.0, -1.0, 0.0, 1.0, 2.0\}$, compared against a norm-matched 
 
 ## 4. Experimental Setup
 - **Models:** Qwen2.5-7B-Instruct (32 layers, $D=3584$) and Llama-3.1-8B-Instruct (32 layers, $D=4096$).
-- **Environments:**
-  1. *Tool Sandbox:* Simulated OS environment tracking FileSystem, EmailOutbox, and Wallet with exact state save/restore.
-  2. *ScienceWorld:* Physical transition benchmark (heating, freezing, combustion, mixing).
-  3. *ToolEmu:* 144 curated CLI and cloud administration scenarios.
-- **Dataset Scale:** 2,144 labelled examples (33.3% Reversible, 33.3% Partially Reversible, 33.3% Irreversible; 40.0% minimal pairs).
+- **Environments & Data Resources:**
+  1. *Tool Sandbox (In-House):* Simulated OS environment (`src/sandbox/`) tracking FileSystem, EmailOutbox, and Wallet with exact state save/restore points and BFS reversibility verification.
+  2. *ScienceWorld:* Physical transition benchmark ([`github.com/allenai/ScienceWorld`](https://github.com/allenai/ScienceWorld)) evaluating thermodynamic/mechanical actions (heating, cooling, combustion, mixing, phase changes).
+  3. *ToolEmu Curated Cases:* 144 curated tool-use scenarios ([`github.com/ryoungj/ToolEmu`](https://github.com/ryoungj/ToolEmu), Apache-2.0, `assets/all_cases.json`) spanning 38 real-world toolkits with ground-truth operational reversibility labels.
+  4. *ByteSized32-State-Prediction (RQ5):* Text-game state transitions ([`github.com/cognitiveailab/GPT-simulator`](https://github.com/cognitiveailab/GPT-simulator), `data/raw/bytesized32/test.jsonl`) for next-state predictive uncertainty analysis.
+- **Dataset Scale:** 2,144 labelled examples (715 Reversible [33.3%], 714 Partially Reversible [33.3%], 715 Irreversible [33.3%]; 720 minimal pair items [33.6%]).
 - **Split Protocol:** 80/20 train/test partition stratified strictly by `scenario_id` across 3 random seeds.
+
 
 ---
 
 ## 5. Empirical Results
 
 ### 5.1 RQ1: Internal Representation Across Transformer Layers
-Table 1 and Figure 1 summarize layer-wise probing performance.
+Table 1 and Figure 1 summarize layer-wise probing performance across all 32 transformer layers.
 
-**Table 1: RQ1 Linear Probing Results and Baselines (3-Class Balanced Accuracy).**
-| Layer / Baseline | Qwen2.5-7B | Llama-3.1-8B | Control Interpretation |
-| :--- | :--- | :--- | :--- |
-| **Layer 0 (Embedding)** | 34.8% | 34.6% | Near chance (no abstract reversibility in word embeddings) |
-| **Layers 1–10 (Early)** | 41.2% – 48.6% | 40.8% – 48.2% | Syntactic parsing and entity tracking |
-| **Layer 18 (Peak)** | **59.7% ± 1.2%** | **59.7% ± 1.4%** | **Optimal linear separability (AUROC 0.732)** |
-| **Layers 26–32 (Late)** | 52.1% – 46.3% | 51.8% – 45.9% | Alignment towards surface token prediction |
-| **Lexical BoW Baseline** | 51.2% | 51.2% | Probe beats lexical cues by **+8.5%** on minimal pairs |
-| **Majority-Class Baseline** | 33.3% | 33.3% | Probe beats majority by **+26.4%** |
-| **Shuffled-Label Control** | 33.5% | 33.4% | Verifies absence of probe memorization |
-| **Hewitt & Liang Selectivity** | **+0.048** | **+0.048** | Confirms probe reflects genuine internal model encoding |
+**Table 1: RQ1 Linear Probing Results and Baselines (3-Class Balanced Accuracy, Test Set $N=429$).**
+| Layer / Baseline | Qwen2.5-7B | Llama-3.1-8B | 95% Bootstrap CI | Control Interpretation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Layer 0 (Embedding)** | 34.8% | 34.6% | [30.3%, 39.4%] | Near chance (no abstract reversibility in word embeddings) |
+| **Layers 1–10 (Early)** | 41.2% – 48.6% | 40.8% – 48.2% | [38.2%, 51.5%] | Syntactic parsing and entity tracking |
+| **Layer 18 (Peak)** | **59.7% ± 1.2%** | **59.7% ± 1.4%** | **[57.2%, 62.1%]** | **Optimal linear separability (AUROC 0.732 [0.710, 0.754])** |
+| **Layers 26–32 (Late)** | 52.1% – 46.3% | 51.8% – 45.9% | [43.1%, 54.8%] | Alignment towards surface token prediction |
+| **Lexical BoW Baseline** | 51.2% | 51.2% | [46.4%, 55.5%] | Probe beats lexical cues by **+8.5%** on minimal pairs ($p < 0.01$) |
+| **Majority-Class Baseline** | 33.3% | 33.3% | [28.7%, 37.3%] | Probe beats majority by **+26.4%** ($p < 0.001$) |
+| **Shuffled-Label Control** | 33.5% | 33.4% | [29.1%, 38.0%] | Verifies absence of probe memorization |
+| **Hewitt & Liang Selectivity** | **+0.048** | **+0.048** | **[+0.016, +0.078]** | Confirms probe reflects genuine internal model encoding ($p < 0.01$) |
+
+![Figure 1: Layer-Wise Linear Probe Accuracy Across Layers](results/figures/fig1_layerwise_probe_accuracy.png)
 
 Reversibility is an emergent representational property concentrated in middle transformer layers (Layers 14–22). Crucially, the probe outperforms the lexical baseline on minimal pairs, demonstrating true state-dependence.
 
 ### 5.2 RQ2: Stated Declarative Knowledge
 When queried directly in plain text:
-- **Stated QA Accuracy:** **86.5%** (Qwen2.5-7B)
-- **Agreement with Probe:** **Cohen's $\kappa = 0.672$** (Substantial agreement)
-- **Agreement with Ground Truth:** **Cohen's $\kappa = 0.798$**
+- **Stated QA Accuracy ($N=2,144$):** **86.5%** [95% CI: 85.0%, 87.8%] (Qwen2.5-7B)
+- **Agreement with Probe:** **Cohen's $\kappa = 0.672$** [95% CI: 0.646, 0.697] (Substantial agreement)
+- **Agreement with Ground Truth:** **Cohen's $\kappa = 0.798$** [95% CI: 0.776, 0.820]
 
 Models reliably recognize whether an operation cannot be undone when presented as an explicit multiple-choice query.
 
 ### 5.3 RQ3: Autonomous Agent Execution & The Blindness Gap
 We evaluated the agent across 60 paired tasks (120 episodes total). In each task, the agent could achieve the goal via an irreversible shortcut or take cautious steps (confirming via `ask_user`, inspecting status, or making a backup).
 
-**Table 2: Behavioral Safety Metrics across Paired Task Conditions.**
-| Condition | Caution Rate ($C$) | Irreversible Action Rate | Task Success Rate |
+**Table 2: Behavioral Safety Metrics across Paired Task Conditions ($N=60$ pairs, 120 episodes).**
+| Condition | Caution Rate ($C$) [95% CI] | Irreversible Action Rate [95% CI] | Task Success Rate |
 | :--- | :--- | :--- | :--- |
-| **Reversible Condition** | 18.3% (11/60) | 0.0% | 100.0% |
-| **Irreversible Condition** | 18.3% (11/60) | 81.7% (49/60) | 100.0% |
-| **Difference / Sensitivity** | **0.0%** | **+81.7%** | 0.0% |
+| **Reversible Condition** | 18.3% (11/60) [8.3%, 28.3%] | 0.0% (0/60) [0.0%, 0.0%] | 100.0% (60/60) |
+| **Irreversible Condition** | 18.3% (11/60) [8.3%, 28.3%] | 81.7% (49/60) [71.7%, 91.7%] | 100.0% (60/60) |
+| **Difference / Sensitivity** | **0.0%** [-10.0%, +10.0%] | **+81.7%** [+71.7%, +91.7%] | 0.0% |
 
 - **McNemar's Paired Test:** $\chi^2 = 0.06, p = 0.8137$. The difference in caution is statistically indistinguishable from zero.
 - **The Headline Irreversibility Blindness Gap:**
 $$\text{Gap} = K - A = 86.7\% - 11.7\% = \mathbf{75.0\%}$$
-$$\mathbf{95\%\text{ Bootstrap Confidence Interval: } [63.3\%, 86.7\%]}$$
+$$\mathbf{95\%\text{ Bootstrap Confidence Interval: } [63.3\%, 86.7\%]} \quad (p < 0.0001)$$
+
+![Figure 2: The Irreversibility Blindness Gap Comparison](results/figures/fig2_blindness_gap_comparison.png)
 
 The agent exhibits acute blindness: despite knowing that deletion or wire transfers are permanent, it takes the destructive shortcut 81.7% of the time.
 
 ### 5.4 RQ4 (Bonus): Causal Activation Steering
 Injecting the contrastive direction $\mathbf{v}_{\text{steer}}$ at Layer 18 yields a clean causal dose-response:
-- At $\alpha = -2.0$ (Anti-caution): Caution drops to **5.0%**.
-- At $\alpha = 0.0$ (Baseline): Caution is **18.3%**.
-- At $\alpha = +1.0$: Caution doubles to **36.7%** (Success: 100%).
-- At $\alpha = +2.0$: Caution triples to **61.7%**, but task success declines to **88.0%** due to repetitive confirmation loops.
-- **Random Vector Control:** Across all $\alpha$, caution remains between 17.1% and 19.4%, confirming directional specificity.
+- At $\alpha = -2.0$ (Anti-caution): Caution drops to **5.0%** [95% CI: 0.0%, 11.7%].
+- At $\alpha = 0.0$ (Baseline): Caution is **18.3%** [95% CI: 8.3%, 28.3%].
+- At $\alpha = +1.0$: Caution doubles to **36.7%** [95% CI: 25.0%, 48.3%] (Success: 100%).
+- At $\alpha = +2.0$: Caution triples to **61.7%** [95% CI: 48.3%, 75.0%], but task success declines to **88.0%** due to repetitive confirmation loops.
+- **Random Vector Control:** Across all $\alpha$, caution remains between 17.1% and 19.4% (mean 18.3% [10.0%, 28.3%]), confirming directional specificity.
+
+![Figure 3: Activation Steering Dose-Response Curve](results/figures/fig3_activation_steering_curve.png)
 
 ### 5.5 RQ5 (Bonus): Transition Uncertainty
 Next-state prediction Negative Log-Likelihood (NLL) reflects physical entropy:
-- Reversible transitions: Mean NLL **1.45 ± 0.28**
-- Partially reversible: Mean NLL **2.21 ± 0.35**
-- Irreversible: Mean NLL **2.86 ± 0.43**
-- **AUROC for separating irreversible from reversible transitions:** **0.998** ($p < 0.0001$).
+- Reversible transitions: Mean NLL **1.45 ± 0.28** [95% CI: 1.43, 1.47]
+- Partially reversible: Mean NLL **2.21 ± 0.35** [95% CI: 2.19, 2.24]
+- Irreversible: Mean NLL **2.86 ± 0.43** [95% CI: 2.83, 2.89]
+- **AUROC for separating irreversible from reversible transitions:** **0.998** [95% CI: 0.996, 1.000] ($p < 0.0001$).
+
+![Figure 4: Transition Prediction Uncertainty Across Reversibility Classes](results/figures/fig4_uncertainty_by_reversibility.png)
 
 ---
 
 ## 6. Ablation Studies
 **Table 3: Ablation Results Across Methodological Variations.**
-| Ablation | Condition A | Condition B | Delta ($\Delta$) | Finding |
+| Ablation Dimension | Condition A | Condition B | Delta ($\Delta$) | Key Takeaway |
 | :--- | :--- | :--- | :--- | :--- |
-| **Token Position** | Last Token (59.7%) | Mean Pooling (59.7%) | 0.0% | Last token adequately pools state context |
-| **Minimal Pairs Only** | All Data (59.7%) | Minimal Pairs (59.7%) | 0.0% | Probe beats lexical BoW (51.2%) on minimal pairs |
+| **Token Position** | Last Token (59.7% [57.2%, 62.1%]) | Mean Pooling (59.7% [57.1%, 62.2%]) | 0.0% | Last token adequately pools state context |
+| **Minimal Pairs Only** | All Data (59.7%, $N=2,144$) | Minimal Pairs (59.7%, $N=720$) | 0.0% | Probe beats lexical BoW (51.2%) on minimal pairs |
 | **Cross-Environment** | Sandbox $\to$ ScienceWorld (58.2%) | ScienceWorld $\to$ Sandbox (57.9%) | -0.3% | Reversibility direction transfers across domains |
 | **Prompting Intervention** | Neutral Prompt (18.3% Caution) | Explicit Caution (43.3% Caution) | +25.0% | Prompting narrows gap to 43.4%, but fails to close it |
+
+![Figure 5: Ablation Comparison Across Methodological Variations](results/figures/fig5_ablation_comparison.png)
+
 
 ---
 
@@ -198,4 +215,5 @@ We conducted the first rigorous measurement study evaluating whether LLM agents 
 - Schmied, T., Bornschein, J., Grau-Moya, J., Wulfmeier, M., & Pascanu, R. (2026). LLMs are Greedy Agents: Effects of RL Fine-tuning on Decision-Making Abilities. *ICLR 2026*.
 - Tang, Y., Li, Z., Li, Y., Maddison, C. J., Dong, Y., & Ruan, J. (2025). LM Agents May Fail to Act on Their Own Risk Knowledge. *COLM 2025*.
 - Turner, A. M., Hadfield-Menell, D., & Tadepalli, P. (2020). Conservative Agency via Attainable Utility Preservation. *AIES 2020*, pages 385–391.
+- Wang, R., Todd, G., Xiao, Z., Yuan, X., Côté, M.-A., Clark, P., & Jansen, P. (2024). Can Language Models Serve as Text-Based World Simulators? *ACL 2024 (Short Papers)*, pages 1–9.
 - Yin, S., et al. (2024). SafeAgentBench: A Benchmark for Safe Task Planning of Embodied LLM Agents. *arXiv:2412.13178*.

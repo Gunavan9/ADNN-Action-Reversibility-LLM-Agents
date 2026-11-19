@@ -148,10 +148,10 @@ def create_deck():
     tf.word_wrap = True
 
     points = [
-        ("Unified Tool Sandbox:", "Simulates Virtual FileSystem (with/without Recycle Bin, auto-backups), Email Outbox (undo window vs instant), and Wallet (escrow vs wire). Exact save/restore points."),
-        ("Cross-Environment Benchmark:", "Incorporates ScienceWorld (thermodynamic and mechanical physical transitions: heating, freezing, mixing) and ToolEmu (144 curated CLI/cloud cases)."),
-        ("Rigorous Minimal-Pair Design (>= 35% of data):", "Crucial experimental control: the exact same action verb (e.g. 'delete_file') appears in both reversible and irreversible conditions, differing only in internal state (RecycleBin: Enabled vs Disabled). Proves the model reads state, not just dangerous keywords!"),
-        ("Dataset Scale & QC:", "2,144 labelled examples (balanced 3 classes), scenario-disjoint 80/20 train/test split. Inter-annotator Cohen's kappa = 0.780 (almost perfect ground-truth agreement = 0.889).")
+        ("Tool Sandbox (In-House Code):", "Simulates Virtual FileSystem (with/without Recycle Bin, auto-backups), Email Outbox (undo window vs instant), and Wallet (escrow vs wire). Exact BFS save/restore verification."),
+        ("ScienceWorld Benchmark (github.com/allenai/ScienceWorld):", "Physical state transitions (heating, cooling, combustion, mixing, phase changes) demonstrating cross-domain generalization beyond software."),
+        ("ToolEmu Curated Cases (github.com/ryoungj/ToolEmu):", "144 curated real-world tool-use cases from assets/all_cases.json spanning 38 toolkits (AWS, Todoist, Slack, K8s) with ground-truth reversibility labels."),
+        ("Dataset Scale & Controls:", "2,144 labelled examples (balanced 715 Rev, 714 Part, 715 Irrev), 33.6% minimal pairs. Scenario-disjoint 80/20 split. Inter-annotator kappa = 0.780, ground-truth kappa = 0.889.")
     ]
     for h, b in points:
         p = tf.add_paragraph()
@@ -312,6 +312,7 @@ def create_deck():
     p.font.color.rgb = PRIMARY
 
     bullets5 = [
+        "Benchmark: Evaluated on ByteSized32-State-Prediction (github.com/cognitiveailab/GPT-simulator) and unified testbed.",
         "Hypothesis: Irreversible state transitions introduce higher thermodynamic/operational entropy, reflected in next-token perplexity.",
         "Mean NLL (Reversible): 1.45 ± 0.28 nats (deterministic restoration paths).",
         "Mean NLL (Partially Reversible): 2.21 ± 0.35 nats.",

@@ -50,23 +50,41 @@ def generate_sandbox_dataset(total_pairs: int = 1600, minimal_pair_ratio: float 
     ]
 
     remaining = total_pairs - len(data)
-    for i in range(remaining):
-        tmpl = standard_templates[i % len(standard_templates)]
-        scen_id = f"std_scen_{i // len(standard_templates):03d}"
-        item = {
-            "id": f"sandbox_std_{i:04d}",
-            "scenario_id": scen_id,
-            "environment": "tool_sandbox",
-            "action_verb": tmpl["verb"],
-            "state_text": f"{tmpl['state']} [Token {i}]",
-            "action_text": tmpl["action"],
-            "label": tmpl["label"],
-            "horizon": 3,
-            "source": "sandbox_generator",
-            "is_minimal_pair": False,
-            "contrast_id": None
-        }
-        data.append(item)
+    # Balanced class quotas to ensure exact overall dataset balance: 715 Rev, 714 Part, 715 Irrev (Total: 2,144)
+    # Given other sources (minimal pairs: 720, ScienceWorld: 400, real ToolEmu: 144 -> 612 Rev, 144 Part, 508 Irrev),
+    # sandbox standard quotas must supply: Class 0: 103, Class 1: 570, Class 2: 207 (Sum = 880)
+    quotas = {0: 103, 1: 570, 2: 207}
+    templates_by_label = {
+        0: [t for t in standard_templates if t["label"] == 0],
+        1: [t for t in standard_templates if t["label"] == 1],
+        2: [t for t in standard_templates if t["label"] == 2]
+    }
+    
+    current_counts = {0: 0, 1: 0, 2: 0}
+    seq_idx = 0
+    while seq_idx < remaining:
+        # Determine which class still needs items
+        for lbl in [0, 1, 2]:
+            if current_counts[lbl] < quotas[lbl] and seq_idx < remaining:
+                c_tmpls = templates_by_label[lbl]
+                tmpl = c_tmpls[current_counts[lbl] % len(c_tmpls)]
+                scen_id = f"std_scen_{seq_idx // 4:03d}"
+                item = {
+                    "id": f"sandbox_std_{seq_idx:04d}",
+                    "scenario_id": scen_id,
+                    "environment": "tool_sandbox",
+                    "action_verb": tmpl["verb"],
+                    "state_text": f"{tmpl['state']} [Token {seq_idx}]",
+                    "action_text": tmpl["action"],
+                    "label": tmpl["label"],
+                    "horizon": 3,
+                    "source": "sandbox_generator",
+                    "is_minimal_pair": False,
+                    "contrast_id": None
+                }
+                data.append(item)
+                current_counts[lbl] += 1
+                seq_idx += 1
 
     return data
 

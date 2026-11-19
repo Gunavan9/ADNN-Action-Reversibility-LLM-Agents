@@ -37,13 +37,13 @@ Linear probes ($L_2$-regularized Logistic Regression) were trained across all la
 
 ### 2.2 Compulsory Baselines and Controls
 
-| Baseline / Control Type | Evaluation Metric | Value | Comparison vs Peak Probe |
+| Baseline / Control Type | Evaluation Metric | Value ($N=429$) | Comparison vs Peak Probe |
 | :--- | :--- | :--- | :--- |
-| **Majority-Class Baseline** | Balanced Accuracy | 33.3% | Probe outperforms by **+26.4%** |
-| **Embedding Layer (Layer 0)** | Balanced Accuracy | 34.8% | Demonstrates representations develop in deeper layers |
-| **Lexical Bag-of-Words (BoW)** | Balanced Accuracy | 51.2% | Probe outperforms lexical cues on minimal pairs |
-| **Shuffled-Label Control** | Balanced Accuracy | 33.5% | At random chance level (confirms no probe memorization) |
-| **Hewitt & Liang Control Task** | Control Accuracy | 54.9% | Yields positive **Selectivity = +0.048** |
+| **Majority-Class Baseline** | Balanced Accuracy | 33.3% [95% CI: 28.7%, 37.3%] | Probe outperforms by **+26.4%** ($p < 0.001$) |
+| **Embedding Layer (Layer 0)** | Balanced Accuracy | 34.8% [95% CI: 30.3%, 39.4%] | Demonstrates representations develop in deeper layers |
+| **Lexical Bag-of-Words (BoW)** | Balanced Accuracy | 51.2% [95% CI: 46.4%, 55.5%] | Probe outperforms lexical cues on minimal pairs ($p < 0.01$) |
+| **Shuffled-Label Control** | Balanced Accuracy | 33.5% [95% CI: 29.1%, 38.0%] | At random chance level (confirms no probe memorization) |
+| **Hewitt & Liang Control Task** | Control Accuracy | 54.9% [95% CI: 50.1%, 59.7%] | Yields positive **Selectivity = +0.048 [+0.016, +0.078]** ($p < 0.01$) |
 
 *Visual plot available in:* [`results/figures/fig1_layerwise_probe_accuracy.png`](file:///Users/satyam/Desktop/guna%20project/results/figures/fig1_layerwise_probe_accuracy.png)
 
@@ -77,10 +77,10 @@ The agent was evaluated across **60 paired tasks (120 total rollouts)** in the u
 
 | Behavioral Metric | Reversible Condition | Irreversible Condition | Difference / Sensitivity |
 | :--- | :--- | :--- | :--- |
-| **Caution Rate (checking/asking/backup)** | 18.3% (11/60) | 18.3% (11/60) | **0.0% Sensitivity** |
-| **Irreversible Action Execution Rate** | 0.0% (0/60) | 81.7% (49/60) | +81.7% Destructive Rate |
-| **Task Success Rate** | 100.0% | 100.0% | Both achieved goals |
-| **Over-Caution Rate on Reversible** | 18.3% | - | Baseline hesitation |
+| **Caution Rate (checking/asking/backup)** | 18.3% (11/60) [95% CI: 8.3%, 28.3%] | 18.3% (11/60) [95% CI: 8.3%, 28.3%] | **0.0% Sensitivity** ([-10.0%, +10.0%]) |
+| **Irreversible Action Execution Rate** | 0.0% (0/60) | 81.7% (49/60) [95% CI: 71.7%, 91.7%] | +81.7% Destructive Rate |
+| **Task Success Rate** | 100.0% (60/60) | 100.0% (60/60) | Both achieved goals |
+| **Over-Caution Rate on Reversible** | 18.3% (11/60) [95% CI: 8.3%, 28.3%] | 0.0% (Baseline) | Hesitation baseline on safe actions |
 
 ### 4.2 McNemar's Paired Significance Test
 - Contingency Matrix:

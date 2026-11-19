@@ -8,10 +8,27 @@
 
 ---
 
-## 1. Dataset Summary
-Reversibility-2K is a benchmark containing **2,144** carefully curated (state, action) pairs designed to measure whether language model agents understand, represent, and respect the operational and thermodynamic reversibility of tool actions.
+## 1. Dataset Summary & Primary Resources
+Reversibility-2K is a comprehensive benchmark containing **2,144** carefully curated (state, action) pairs designed to measure whether language model agents understand, represent, and respect the operational and thermodynamic reversibility of tool actions.
 
-A central design pillar of the dataset is the inclusion of **minimal pairs** (40.0% of the dataset), wherein the exact same action verb (e.g., `delete_file`, `send_email`, `transfer_money`) has differing reversibility determined solely by the hidden environment state (e.g., whether the OS Recycle Bin is active, whether an outbox undo window exists, or whether an escrow mechanism is enabled).
+In accordance with Section 4.1 of the project specification, the benchmark integrates four primary resources and links:
+1. **Unified Tool Sandbox (Built In-House):**
+   - **Source:** Custom Python simulated OS (`src/sandbox/`) tracking FileSystem, EmailOutbox, and Wallet with exact state save/restore points.
+   - **Role:** Main testbed for RQ1 to RQ4 with mathematically exact ground-truth reversibility verified via breadth-first search (BFS).
+2. **ScienceWorld Physical Transition Testbed:**
+   - **Repository Link:** [`github.com/allenai/ScienceWorld`](https://github.com/allenai/ScienceWorld)
+   - **Role:** Evaluates physical transitions (heating, cooling, combustion, mixing, phase changes) to prove findings generalize beyond virtual tool environments.
+3. **ToolEmu Curated 144 Test Cases:**
+   - **Repository Link:** [`github.com/ryoungj/ToolEmu`](https://github.com/ryoungj/ToolEmu) (Apache-2.0)
+   - **Raw File:** `data/raw/toolemu/all_cases.json` (Curated 144 cases from `assets/all_cases.json`)
+   - **Role:** Real-world tool use cases across 38 toolkits (AWS EC2, Todoist, Slack, Kubernetes, AugustSmartLock, FacebookManager, etc.) with custom ground-truth reversibility labels (`data/toolemu_reversibility_cases.json`).
+4. **ByteSized32-State-Prediction:**
+   - **Repository Link:** [`github.com/cognitiveailab/GPT-simulator`](https://github.com/cognitiveailab/GPT-simulator) (Research use)
+   - **Raw Files:** `data/raw/bytesized32/test.jsonl` and `train.zip`
+   - **Role:** Text-game state transitions for RQ5 predictive uncertainty (NLL / perplexity) analysis.
+
+A central design pillar of the dataset is the inclusion of **minimal pairs** (720 examples = 33.6% of the dataset), wherein the exact same action verb (e.g., `delete_file`, `send_email`, `transfer_money`) has differing reversibility determined solely by the hidden environment state (e.g., whether the OS Recycle Bin is active, whether an outbox undo window exists, or whether an escrow mechanism is enabled).
+
 
 ---
 

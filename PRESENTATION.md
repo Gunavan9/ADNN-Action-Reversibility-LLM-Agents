@@ -29,9 +29,10 @@
 ---
 
 ## Slide 4: Testbeds & Minimal-Pair Dataset (3:30 - 5:00)
-- **Visuals:** Overview of Tool Sandbox, ScienceWorld, ToolEmu, and the minimal-pair design.
+- **Visuals:** Overview of Tool Sandbox, ScienceWorld (`github.com/allenai/ScienceWorld`), ToolEmu (`github.com/ryoungj/ToolEmu`), and the minimal-pair design.
 - **Speaker Script:**
-  > "A core methodological requirement of our work is that probes must not simply learn lexical keywords like 'delete'. Therefore, over 40% of our 2,144 labelled examples are **minimal pairs**: instances where the exact same action verb—such as `delete_file`—is executed, but its reversibility differs entirely based on the environment's internal state (for example, whether the OS Recycle Bin is enabled or disabled). In addition to our unified Sandbox, we evaluated physical transitions in ScienceWorld and curated cases from ToolEmu. Our dataset achieved an inter-annotator agreement of kappa = 0.780 and ground-truth agreement of kappa = 0.889."
+  > "A core methodological requirement of our work is that probes must not simply learn lexical keywords like 'delete'. Therefore, over 33% of our 2,144 labelled examples are **minimal pairs**: instances where the exact same action verb—such as `delete_file`—is executed, but its reversibility differs entirely based on the environment's internal state (for example, whether the OS Recycle Bin is enabled or disabled). In addition to our unified Sandbox, we evaluated physical transitions in ScienceWorld (`allenai/ScienceWorld`) and 144 curated test cases from ToolEmu (`ryoungj/ToolEmu`, Apache-2.0). Our dataset achieved an inter-annotator agreement of kappa = 0.780 and ground-truth agreement of kappa = 0.889 across 715 Reversible, 714 Partially Reversible, and 715 Irreversible examples."
+
 
 ---
 
@@ -64,9 +65,10 @@
 ---
 
 ## Slide 9: RQ5 (Bonus) - Transition Uncertainty (11:00 - 12:00)
-- **Visuals:** Embedded Figure 4 (Next-State NLL distributions by class, AUROC = 0.998).
+- **Visuals:** Embedded Figure 4 (Next-State NLL distributions by class, AUROC = 0.998) on ByteSized32-State-Prediction (`github.com/cognitiveailab/GPT-simulator`).
 - **Speaker Script:**
-  > "For RQ5, we examined whether generative next-state prediction uncertainty correlates with reversibility. Reversible transitions exhibited low entropy (mean NLL 1.45), while irreversible transitions had significantly higher predictive dispersion (mean NLL 2.86), yielding an AUROC of 0.998. The model's generative distribution is acutely aware of state entropy."
+  > "For RQ5, we examined whether generative next-state prediction uncertainty correlates with reversibility on the ByteSized32 text-game benchmark (`cognitiveailab/GPT-simulator`). Reversible transitions exhibited low entropy (mean NLL 1.45), while irreversible transitions had significantly higher predictive dispersion (mean NLL 2.86), yielding an AUROC of 0.998. The model's generative distribution is acutely aware of state entropy."
+
 
 ---
 

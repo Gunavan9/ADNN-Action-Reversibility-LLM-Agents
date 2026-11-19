@@ -11,3 +11,5 @@ matplotlib==3.7.2
 tqdm==4.66.1
 seaborn==0.12.2
 pytest==7.4.0
+python-pptx==0.6.21
+

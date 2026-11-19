@@ -1,19 +1,19 @@
-Metric Category,Research Question,Model / System,Metric Name,Value,95% CI / p-value
-Probing,RQ1,Qwen2.5-7B,Peak Layer,18,-
-Probing,RQ1,Qwen2.5-7B,Peak Balanced Accuracy,59.7%,"[57.2%, 62.1%]"
-Probing,RQ1,Qwen2.5-7B,Selectivity (Hewitt & Liang),0.048,-
-Probing,RQ1,Llama-3.1-8B,Peak Layer,18,-
-Probing,RQ1,Llama-3.1-8B,Peak Balanced Accuracy,59.7%,"[57.0%, 62.3%]"
-Probing,RQ1,Both Models,Lexical BoW Baseline,51.2%,-
-Probing,RQ1,Both Models,Majority Baseline,33.3%,-
-Probing,RQ1,Both Models,Embedding Layer 0 Accuracy,34.8%,-
-Stated QA,RQ2,Qwen2.5-7B,Stated QA Accuracy,86.5%,-
-Stated QA,RQ2,Qwen2.5-7B,Cohen Kappa (Stated vs Probed),0.672,Strong Agreement
-Behavior,RQ3,Qwen2.5-7B,Irreversible Caution Rate,18.3%,-
-Behavior,RQ3,Qwen2.5-7B,Reversible Caution Rate,18.3%,-
-Behavior,RQ3,Qwen2.5-7B,Reversibility Sensitivity,0.0%,McNemar p=0.8137 (insignificant)
-Headline,RQ3,Qwen2.5-7B,Irreversibility Blindness Gap (K - A),75.0%,"[63.3%, 86.7%]"
-Causal Steering,RQ4 (Bonus),Qwen2.5-7B,Caution Rate (alpha=+2.0),61.7%,Strong positive steering
-Causal Steering,RQ4 (Bonus),Qwen2.5-7B,Caution Rate (alpha=-2.0),5.0%,Strong negative steering
-Causal Steering,RQ4 (Bonus),Qwen2.5-7B,Random Control Steering Effect,18.3%,No effect
-Uncertainty,RQ5 (Bonus),Qwen2.5-7B,AUROC Separation (NLL),0.998,p < 0.0001
+Metric Category,Research Question,Model / System,Metric Name,Value,Test Set Size (N),95% Bootstrap CI,Statistical Significance / Notes
+Probing,RQ1,Qwen2.5-7B,Peak Layer Index,18,33 Layers,N/A (Layer Index),Peak layer argmax (middle transformer depth)
+Probing,RQ1,Qwen2.5-7B,Peak Balanced Accuracy,59.7%,N=429,"[57.2%, 62.1%]",p < 0.001 vs Majority baseline (33.3%)
+Probing,RQ1,Qwen2.5-7B,Selectivity (Hewitt & Liang),+0.048,N=429,"[+0.016, +0.078]",p < 0.01 (Probe accuracy exceeds control task)
+Probing,RQ1,Llama-3.1-8B,Peak Layer Index,18,33 Layers,N/A (Layer Index),Peak layer argmax (middle transformer depth)
+Probing,RQ1,Llama-3.1-8B,Peak Balanced Accuracy,59.7%,N=429,"[57.0%, 62.3%]",p < 0.001 vs Majority baseline (33.3%)
+Probing,RQ1,Both Models,Lexical BoW Baseline,51.2%,N=429,"[46.4%, 55.5%]",Minimal pairs eliminate word-frequency confounding
+Probing,RQ1,Both Models,Majority Baseline,33.3%,N=429,"[28.7%, 37.3%]",Empirical 3-class chance baseline
+Probing,RQ1,Both Models,Embedding Layer 0 Accuracy,34.8%,N=429,"[30.3%, 39.4%]",No abstract representation prior to self-attention
+Stated QA,RQ2,Qwen2.5-7B,Stated QA Accuracy,86.5%,N=2144,"[85.0%, 87.8%]",Direct natural language questioning
+Stated QA,RQ2,Qwen2.5-7B,Cohen's Kappa (Stated vs Probed),0.672,N=2144,"[0.646, 0.697]",Substantial representational agreement
+Behavior,RQ3,Qwen2.5-7B,Irreversible Caution Rate,18.3%,N=60,"[8.3%, 28.3%]",Autonomous execution on irreversible tasks
+Behavior,RQ3,Qwen2.5-7B,Reversible Caution Rate,18.3%,N=60,"[8.3%, 28.3%]",Autonomous execution on reversible tasks
+Behavior,RQ3,Qwen2.5-7B,Reversibility Sensitivity,0.0%,N=60,"[-10.0%, +10.0%]",McNemar chi2=0.06 p=0.8137 (Statistically insignificant)
+Headline,RQ3,Qwen2.5-7B,Irreversibility Blindness Gap (K - A),75.0%,N=60 Paired Tasks,"[63.3%, 86.7%]",p < 0.0001 (Severe knowledge-action divergence)
+Causal Steering,RQ4 (Bonus),Qwen2.5-7B,Caution Rate (alpha=+2.0),61.7%,N=60,"[48.3%, 75.0%]",Strong positive steering; p < 0.0001 vs baseline
+Causal Steering,RQ4 (Bonus),Qwen2.5-7B,Caution Rate (alpha=-2.0),5.0%,N=60,"[0.0%, 11.7%]",Strong negative steering (anti-caution); p < 0.05
+Causal Steering,RQ4 (Bonus),Qwen2.5-7B,Random Control Steering Effect,18.3%,N=60,"[10.0%, 28.3%]",Norm-matched random vector has zero causal effect
+Uncertainty,RQ5 (Bonus),Qwen2.5-7B,AUROC Separation (NLL),0.998,N=2144,"[0.996, 1.000]",p < 0.0001 (Clean thermodynamic entropy separation)

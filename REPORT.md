@@ -1,9 +1,9 @@
 # Do AI Agents Know Which Actions Cannot Be Undone?
 ## Measuring Internal Representation, Stated Knowledge, and the Irreversibility Blindness Gap in Autonomous LLMs
 
-**Authors:** Satyam, Guna, and Research Team  
+**Authors:** Gunavan, Teja Sai, and Shabarish  
 **Venue / Course:** ADNN Research Track (Project Option 1)  
-**Code & Data Repository:** `/Users/satyam/Desktop/guna project`  
+**Code & Data Repository:** [https://github.com/Gunavan9/ADNN-Action-Reversibility-LLM-Agents](https://github.com/Gunavan9/ADNN-Action-Reversibility-LLM-Agents)  
 
 ---
 

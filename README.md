@@ -16,10 +16,11 @@ This repository contains the complete, publication-grade implementation, benchma
 - **Bonus RQ4 (Causal Steering):** Contrastive Activation Addition (CAA) at Layer 18 monotonically restores agent caution from **5.0%** ($\alpha=-2.0$) to **61.7%** ($\alpha=+2.0$).
 - **Bonus RQ5 (Transition Uncertainty):** Next-state predictive entropy cleanly separates irreversible transitions (**AUROC = 0.998**).
 
-### Team Members
-1. **Gunavan** (Problem Formulation, Unified Testbeds & Minimal-Pair Dataset Engineering)
-2. **Teja Sai** (Layer-wise Probing Geometry across 32 Layers, Controls & Stated QA Alignment)
-3. **Shabarish** (Autonomous Behavioral Rollouts, Causal Activation Steering, Uncertainty & Visualization)
+### Group: G_094_221_222_105
+1. **SE23UCSE094 — K.Gunavan** (Problem Formulation, Unified Testbeds & Minimal-Pair Dataset Engineering)
+2. **SE23UCSE221 — K.Teja Sai Bhargav Reddy** (Layer-wise Probing Geometry across 32 Layers, Controls & Stated QA Alignment)
+3. **SE23UCSE222 — P.Shabarish** (Autonomous Behavioral Rollouts, Causal Activation Steering, Uncertainty & Visualization)
+4. **SE23UCSE105 — L.Sri Charan Rao** (ToolEmu Real-World Cases, ScienceWorld Dynamics, Test Suites & Statistical Validation)
 
 ---
 

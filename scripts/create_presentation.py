@@ -9,7 +9,11 @@ Builds a 14-slide academic conference slide deck using python-pptx:
   II) Methodology & Approach
   III) Results
   IV) Conclusion & Understanding
-- Features Team Members: 1] Gunavan, 2] Teja Sai, 3] Shabarish.
+- Group: G_094_221_222_105
+  SE23UCSE094 - K.Gunavan
+  SE23UCSE221 - K.Teja Sai Bhargav Reddy
+  SE23UCSE222 - P.Shabarish
+  SE23UCSE105 - L.Sri Charan Rao
 """
 
 import sys
@@ -74,7 +78,7 @@ def create_deck():
             p2.font.color.rgb = TEXT_MUTED
 
     # -------------------------------------------------------------
-    # Slide 1: Title Slide (Team & Project Overview)
+    # Slide 1: Title Slide (Group & Team Presentation)
     # -------------------------------------------------------------
     s1 = prs.slides.add_slide(blank_layout)
     # Background accent band
@@ -84,36 +88,36 @@ def create_deck():
     band.line.color.rgb = ACCENT
 
     # Title Card Background
-    card = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.85), Inches(11.733), Inches(5.95))
+    card = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.75), Inches(11.733), Inches(6.15))
     card.fill.solid()
     card.fill.fore_color.rgb = BG_LIGHT
     card.line.color.rgb = RGBColor(220, 226, 235)
 
-    t_box = s1.shapes.add_textbox(Inches(1.2), Inches(1.15), Inches(10.9), Inches(2.6))
+    t_box = s1.shapes.add_textbox(Inches(1.2), Inches(0.95), Inches(10.9), Inches(2.5))
     tf = t_box.text_frame
     tf.word_wrap = True
     
     p_course = tf.paragraphs[0]
-    p_course.text = "ADNN PROJECT OPTION 1  |  15-MINUTE RESEARCH PRESENTATION"
-    p_course.font.size = Pt(12)
+    p_course.text = "ADNN PROJECT OPTION 1  |  15-MINUTE RESEARCH PRESENTATION  |  GROUP: G_094_221_222_105"
+    p_course.font.size = Pt(11)
     p_course.font.bold = True
     p_course.font.color.rgb = SECONDARY
 
     p = tf.add_paragraph()
     p.text = "Do AI Agents Know Which Actions Cannot Be Undone?"
-    p.font.size = Pt(32)
+    p.font.size = Pt(30)
     p.font.bold = True
     p.font.color.rgb = PRIMARY
-    p.space_before = Pt(8)
+    p.space_before = Pt(6)
 
     p2 = tf.add_paragraph()
-    p2.text = "Probing Internal Representations, Stated Knowledge, and the Irreversibility Blindness Gap in LLM Agents"
-    p2.font.size = Pt(16)
+    p2.text = "Measuring Internal Representations, Stated Declarative Knowledge, and the Irreversibility Blindness Gap"
+    p2.font.size = Pt(15)
     p2.font.color.rgb = ACCENT
-    p2.space_before = Pt(6)
+    p2.space_before = Pt(4)
 
-    # Team Members Box
-    team_box = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(3.9), Inches(10.9), Inches(1.65))
+    # Team Members Box (2 Columns x 2 Rows)
+    team_box = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(3.6), Inches(10.9), Inches(2.1))
     team_box.fill.solid()
     team_box.fill.fore_color.rgb = RGBColor(255, 255, 255)
     team_box.line.color.rgb = ACCENT
@@ -121,30 +125,39 @@ def create_deck():
     tf_team.word_wrap = True
 
     p_th = tf_team.paragraphs[0]
-    p_th.text = "PROJECT TEAM MEMBERS:"
-    p_th.font.size = Pt(13)
+    p_th.text = "GROUP NAME: G_094_221_222_105   |   TEAM MEMBERS & STUDENT IDS:"
+    p_th.font.size = Pt(12)
     p_th.font.bold = True
     p_th.font.color.rgb = PRIMARY
 
-    p_tm = tf_team.add_paragraph()
-    p_tm.text = "1] Gunavan       2] Teja Sai       3] Shabarish"
-    p_tm.font.size = Pt(18)
-    p_tm.font.bold = True
-    p_tm.font.color.rgb = SECONDARY
-    p_tm.space_before = Pt(4)
+    # Member 1 & 2
+    p_m1 = tf_team.add_paragraph()
+    p_m1.text = "• SE23UCSE094 — K.Gunavan             • SE23UCSE221 — K.Teja Sai Bhargav Reddy"
+    p_m1.font.size = Pt(15)
+    p_m1.font.bold = True
+    p_m1.font.color.rgb = TEXT_DARK
+    p_m1.space_before = Pt(6)
+
+    # Member 3 & 4
+    p_m2 = tf_team.add_paragraph()
+    p_m2.text = "• SE23UCSE222 — P.Shabarish           • SE23UCSE105 — L.Sri Charan Rao"
+    p_m2.font.size = Pt(15)
+    p_m2.font.bold = True
+    p_m2.font.color.rgb = TEXT_DARK
+    p_m2.space_before = Pt(4)
 
     p_det = tf_team.add_paragraph()
-    p_det.text = "Evaluated on Open-Weight Foundation Models: Qwen2.5-7B & Llama-3.1-8B  |  Code & Benchmark: github.com/Gunavan9/ADNN-Action-Reversibility-LLM-Agents"
-    p_det.font.size = Pt(11)
+    p_det.text = "Foundation Models: Qwen2.5-7B & Llama-3.1-8B  |  Code & Benchmark: github.com/Gunavan9/ADNN-Action-Reversibility-LLM-Agents"
+    p_det.font.size = Pt(10)
     p_det.font.color.rgb = TEXT_MUTED
-    p_det.space_before = Pt(4)
+    p_det.space_before = Pt(6)
 
     # Presentation Structure Pill Banner at bottom
-    s_box = s1.shapes.add_textbox(Inches(1.2), Inches(5.65), Inches(10.9), Inches(0.9))
+    s_box = s1.shapes.add_textbox(Inches(1.2), Inches(5.8), Inches(10.9), Inches(0.8))
     tf_s = s_box.text_frame
     tf_s.word_wrap = True
     p_s = tf_s.paragraphs[0]
-    p_s.text = "Strict 15-Minute Agenda:  I) Problem Statement & Understanding   ➔   II) Methodology & Approach   ➔   III) Results   ➔   IV) Conclusion & Understanding"
+    p_s.text = "Strict 15-Min Agenda:  I) Problem Statement & Understanding   ➔   II) Methodology & Approach   ➔   III) Results   ➔   IV) Conclusion & Understanding"
     p_s.font.size = Pt(11)
     p_s.font.bold = True
     p_s.font.color.rgb = PRIMARY
@@ -512,14 +525,18 @@ def create_deck():
     # Slide 14: [IV] Conclusion & Understanding (Team Work & Q&A)
     # -------------------------------------------------------------
     s14 = prs.slides.add_slide(blank_layout)
-    add_header(s14, "Summary, Team Work Distribution & Deliverables", "Complete open-source reproducible research package", "IV. Conclusion & Understanding")
+    add_header(s14, "Summary, Group Work Distribution & Deliverables", "Complete open-source reproducible research package | Group: G_094_221_222_105", "IV. Conclusion & Understanding")
 
     c_box = s14.shapes.add_textbox(Inches(0.8), Inches(1.75), Inches(11.7), Inches(5.2))
     tf = c_box.text_frame
     tf.word_wrap = True
 
     summary = [
-        ("Team Work Distribution:", "1] Gunavan (Problem Formulation, Unified Testbeds & Minimal-Pair Dataset Engineering)  |  2] Teja Sai (Probing Architecture across 32 Layers, Baselines & Stated QA Alignment)  |  3] Shabarish (Autonomous Behavioral Evaluation, Activation Steering, Uncertainty & Visualization)."),
+        ("Group Name: G_094_221_222_105 — Work Distribution:", 
+         "SE23UCSE094 (K.Gunavan): Problem Formulation, Unified Tool Sandbox, 2,144-Sample Minimal-Pair Dataset Curation.\n"
+         "• SE23UCSE221 (K.Teja Sai Bhargav Reddy): Layer-wise Probing across 32 Layers, Baseline Controls & Stated QA Alignment.\n"
+         "• SE23UCSE222 (P.Shabarish): Behavioral Rollouts (RQ3), Causal Activation Steering (RQ4), Uncertainty (RQ5) & Graphics.\n"
+         "• SE23UCSE105 (L.Sri Charan Rao): ToolEmu 144 Case Curation, ScienceWorld Dynamics, Test Suites & Statistical Tests."),
         ("Full Deliverables Package:", "Live GitHub Repository: github.com/Gunavan9/ADNN-Action-Reversibility-LLM-Agents"),
         ("1. Academic Paper Manuscript:", "Complete 8-page two-column conference paper in paper/main.tex and REPORT.md embedding Figures 1-5 and formal Tables 1-5."),
         ("2. Comprehensive Results Document:", "Full empirical analysis, ablation tables, and statistical tests in RESULTS.md and results/summary_metrics.csv."),
@@ -528,11 +545,11 @@ def create_deck():
     ]
     for h, b in summary:
         p = tf.add_paragraph()
-        p.text = f"★ {h} " if "Team" in h or "Live" in b else f"• {h} "
+        p.text = f"★ {h} " if "Group" in h or "Live" in b else f"• {h} "
         p.font.bold = True
-        p.font.size = Pt(14)
-        p.font.color.rgb = SECONDARY if "Team" in h else (ACCENT if "Deliverables" in h else PRIMARY)
-        p.space_after = Pt(8)
+        p.font.size = Pt(13)
+        p.font.color.rgb = SECONDARY if "Group" in h else (ACCENT if "Deliverables" in h else PRIMARY)
+        p.space_after = Pt(6)
         run = p.add_run()
         run.text = b
         run.font.bold = False
